@@ -16,7 +16,7 @@ const defaultSeed = {
       id: 1,
       nome: 'Administrador Flora',
       email: 'admin@flora.com',
-      senha: '$2a$10$wT0l8D3K12Y793oGkrhHgeZ4lqNqXQ73uWn9487c6v2rVbm09QxG2',
+      senha: '$2b$10$W4dieZ6iwgaKsJLSmh5bN.flTCvTHSuzvUHnCqeoKn5P8PhCFQx9a',
       is_verified: 1,
       token_verificacao: null,
       token_reset: null,

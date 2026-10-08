@@ -37,7 +37,7 @@ INSERT IGNORE INTO produto (id_prod, categoria, descricao, valor, estoque, estoq
 -- 4. Usuário Padrão de Demonstração (Senha: Flora2026@)
 -- Hash bcrypt de 'Flora2026@'
 INSERT IGNORE INTO usuarios (id, nome, email, senha, is_verified) VALUES
-(1, 'Administrador Flora', 'admin@flora.com', '$2a$10$wT0l8D3K12Y793oGkrhHgeZ4lqNqXQ73uWn9487c6v2rVbm09QxG2', 1);
+(1, 'Administrador Flora', 'admin@flora.com', '$2b$10$W4dieZ6iwgaKsJLSmh5bN.flTCvTHSuzvUHnCqeoKn5P8PhCFQx9a', 1);
 
 -- 5. Histórico Inicial de Vendas (Cab e Itens)
 INSERT IGNORE INTO venda_cab (id_venda, id_func, data_venda, valor_total) VALUES
