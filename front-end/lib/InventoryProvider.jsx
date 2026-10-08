@@ -19,6 +19,39 @@ const normalizeDemandRecord = (r) => ({
   units_sold: Number(r.units_sold)
 });
 
+const DEFAULT_DEMAND = [
+  { id: 1, product_sku: 'ANE-001', date: '2026-09-10', units_sold: 4 },
+  { id: 2, product_sku: 'ANE-001', date: '2026-09-15', units_sold: 5 },
+  { id: 3, product_sku: 'ANE-001', date: '2026-09-20', units_sold: 6 },
+  { id: 4, product_sku: 'ANE-001', date: '2026-09-25', units_sold: 5 },
+  { id: 5, product_sku: 'ANE-001', date: '2026-09-30', units_sold: 7 },
+  { id: 6, product_sku: 'ANE-001', date: '2026-10-05', units_sold: 8 },
+  { id: 7, product_sku: 'BRI-001', date: '2026-09-10', units_sold: 8 },
+  { id: 8, product_sku: 'BRI-001', date: '2026-09-15', units_sold: 7 },
+  { id: 9, product_sku: 'BRI-001', date: '2026-09-20', units_sold: 10 },
+  { id: 10, product_sku: 'BRI-001', date: '2026-09-25', units_sold: 9 },
+  { id: 11, product_sku: 'BRI-001', date: '2026-09-30', units_sold: 11 },
+  { id: 12, product_sku: 'BRI-001', date: '2026-10-05', units_sold: 12 },
+  { id: 13, product_sku: 'COL-001', date: '2026-09-10', units_sold: 3 },
+  { id: 14, product_sku: 'COL-001', date: '2026-09-15', units_sold: 4 },
+  { id: 15, product_sku: 'COL-001', date: '2026-09-20', units_sold: 5 },
+  { id: 16, product_sku: 'COL-001', date: '2026-09-25', units_sold: 4 },
+  { id: 17, product_sku: 'COL-001', date: '2026-09-30', units_sold: 6 },
+  { id: 18, product_sku: 'COL-001', date: '2026-10-05', units_sold: 7 },
+  { id: 19, product_sku: 'PUL-001', date: '2026-09-10', units_sold: 2 },
+  { id: 20, product_sku: 'PUL-001', date: '2026-09-15', units_sold: 3 },
+  { id: 21, product_sku: 'PUL-001', date: '2026-09-20', units_sold: 4 },
+  { id: 22, product_sku: 'PUL-001', date: '2026-09-25', units_sold: 5 },
+  { id: 23, product_sku: 'PUL-001', date: '2026-09-30', units_sold: 4 },
+  { id: 24, product_sku: 'PUL-001', date: '2026-10-05', units_sold: 6 },
+  { id: 25, product_sku: 'BRA-001', date: '2026-09-10', units_sold: 1 },
+  { id: 26, product_sku: 'BRA-001', date: '2026-09-15', units_sold: 2 },
+  { id: 27, product_sku: 'BRA-001', date: '2026-09-20', units_sold: 3 },
+  { id: 28, product_sku: 'BRA-001', date: '2026-09-25', units_sold: 2 },
+  { id: 29, product_sku: 'BRA-001', date: '2026-09-30', units_sold: 4 },
+  { id: 30, product_sku: 'BRA-001', date: '2026-10-05', units_sold: 5 }
+];
+
 export function InventoryProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -36,7 +69,7 @@ export function InventoryProvider({ children }) {
 
       let finalProducts = (resProd || []).map(normalizeProduct);
       let finalCategories = resCat || [];
-      let finalDemand = (resDemand || []).map(normalizeDemandRecord);
+      let finalDemand = (resDemand && resDemand.length > 0) ? resDemand.map(normalizeDemandRecord) : DEFAULT_DEMAND;
 
       // Sincronização e persistência no navegador para ambientes serverless
       try {

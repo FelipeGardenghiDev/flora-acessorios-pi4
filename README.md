@@ -1,95 +1,189 @@
-# Flora Acessórios 4.0 — Projeto Integrador
+# 🌸 Flora Acessórios 4.0 — Sistema de Gestão & Previsão de Demanda com Inteligência Artificial
 
-> 📌 **Status do Projeto (Alinhamento de Reunião):**  
-> O **Front-End** está integrado, funcional e pronto para demonstração e navegação de telas.  
-> As frentes de **Back-End** e **Database** serão desenvolvidas do zero pela equipe, com novas definições de linguagem, arquitetura e modelagem.
+> **Projeto Integrador (PI 4) — Engenharia da Computação / Ciência de Dados**  
+> Solução Full-Stack completa para controle de vendas (PDV), gestão de inventário inteligente, métricas financeiras e **Previsão de Demanda com Redes Neurais Artificiais (MLP)**.
+
+[![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com)
+[![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-blue?logo=react)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-green?logo=nodedotjs)](https://nodejs.org/)
+[![PyTorch](https://img.shields.io/badge/Machine%20Learning-PyTorch%20MLP-ee4c2c?logo=pytorch)](https://pytorch.org/)
+[![MySQL](https://img.shields.io/badge/Database-MySQL%20%2F%20XAMPP-orange?logo=mysql)](https://www.mysql.com/)
 
 ---
 
-## 📁 Estrutura do Monorepo
+## 📌 Sumário
+
+1. [Visão Geral](#-visão-geral)
+2. [Arquitetura e Tecnologias](#-arquitetura-e-tecnologias)
+3. [Módulo de Machine Learning (Rede Neural MLP)](#-módulo-de-machine-learning-rede-neural-mlp)
+4. [Estrutura do Repositório](#-estrutura-do-repositório)
+5. [Como Rodar Localmente (Windows + XAMPP)](#-como-rodar-localmente-windows--xampp)
+6. [Deploy em Nuvem (Vercel)](#-deploy-em-nuvem-vercel)
+7. [Credenciais de Teste](#-credenciais-de-teste)
+8. [Telas e Funcionalidades](#-telas-e-funcionalidades)
+
+---
+
+## 🌟 Visão Geral
+
+O **Flora Acessórios 4.0** moderniza a gestão de uma loja de semijoias e acessórios finos através de:
+- **Gestão Operacional:** Cadastro de produtos por SKU, controle de estoque mínimo e reposição, categorização dinâmica e relatórios analíticos de vendas.
+- **Ponto de Venda (PDV):** Lançamento ágil de vendas por vendedor com cálculo automático e histórico em tempo real.
+- **Inteligência Artificial Preditiva:** Algoritmo de projeção temporal e Rede Neural Multilayer Perceptron treinada com histórico de transações para antecipar a demanda dos próximos 7 a 30 dias, evitando rupturas de estoque e capital parado.
+
+---
+
+## 🛠️ Arquitetura e Tecnologias
+
+### 🎨 Front-End
+- **React 18** com **Vite** (bundler de alta performance).
+- **Tailwind CSS** + **Shadcn UI** (Radix UI) para componentes acessíveis e elegantes com suporte a Dark Mode.
+- **Recharts** para gráficos interativos de faturamento, curvas de tendência e demanda futura.
+- **@dnd-kit** para reorganização dinâmica dos cartões do Dashboard por *drag-and-drop*.
+- **Lucide React** para iconografia semântica.
+- **Sonner / Toast** para feedback visual imediato.
+
+### ⚙️ Back-End
+- **Node.js** com **Express**.
+- **RESTful API** com rotas completas para autenticação, catálogo, inventário, vendas e análises.
+- **Segurança:** Hashing de senhas com `bcrypt` e tokens assinados `JWT` (JSON Web Token).
+- **Driver Híbrido:** Conexão nativa com **MySQL (via mysql2/promise)** no ambiente local/servidor e camada de **Fallback Resiliente em memória/localStorage** para execução Serverless em nuvem (Vercel).
+
+### 🗄️ Banco de Dados
+- **MySQL 8.0+ / MariaDB (XAMPP)**.
+- Schema normalizado (`database/schema.sql`): tabelas `usuarios`, `funcionario`, `categorias`, `produto`, `venda_cab`, `venda_item`, `demand_records`, `messages`, `favourites`.
+- Carga de dados inicial (`database/seed.sql`) com histórico de vendas e demanda.
+
+---
+
+## 🧠 Módulo de Machine Learning (Rede Neural MLP)
+
+O projeto conta com uma abordagem completa de Ciência de Dados para modelagem preditiva de demanda:
+
+### 1. Notebook Experimental (`Rede_Neural_Multilayer_Perceptron_MLP_(Teste).ipynb`)
+- **Objetivo:** Previsão multi-step da demanda diária de produtos para os próximos **7 dias no futuro ($t+1$ a $t+7$)**.
+- **Engenharia de Recursos (Feature Engineering):**
+  - Variáveis temporais extraídas da data (Dia da Semana, Dia do Mês, Mês do Ano).
+  - Codificação de identificadores de produtos (*SKU/One-Hot*).
+  - Normalização Min-Max para a quantidade vendida.
+- **Arquitetura da Rede Neural (PyTorch):**
+  - **Camada de Entrada:** 17 nós (produtos + sazonalidades de calendário).
+  - **Camadas Ocultas:**
+    - `Linear(17, 256)` + `ReLU` + `Dropout(0.20)`
+    - `Linear(256, 128)` + `ReLU` + `Dropout(0.20)`
+    - `Linear(128, 64)` + `ReLU`
+  - **Camada de Saída:** `Linear(64, 7)` (7 neurônios contínuos, cada um prevendo um dia futuro).
+  - **Otimização:** Otimizador Adam com taxa de aprendizado $\eta = 0.001$, regularização L2 (`weight_decay = 0.0001`) e função de custo Erro Quadrático Médio (`MSELoss`).
+- **Validação:** Separação temporal (treino em 2023, validação e teste em 2024 para evitar *data leakage*).
+
+### 2. Pesos Salvos (`pesos_modelo/`)
+- Estado dos tensores e pesos aprendidos exportados com `torch.save(model.state_dict(), 'pesos_modelo.pth')`, preservados no repositório.
+
+### 3. Integração na Aplicação Web
+- No Dashboard (`DemandForecastSection` e `DemandForecastChart`), os dados históricos e os registros de demanda (`demand_records`) são plotados com linhas contínuas (histórico real) e linhas tracejadas (projeção preditiva), acompanhados por indicadores visuais de inclinação (*slope*) e badges de **Tendência Alta** ou **Tendência Queda**.
+
+---
+
+## 📁 Estrutura do Repositório
 
 ```text
-flora-acessorios-4/
-├── back-end/       # ⏳ A ser desenvolvido do zero pela equipe
-├── database/       # ⏳ Modelagem e scripts SQL a serem desenvolvidos do zero
-├── front-end/      # ✅ [PRONTO] Interface de usuário completa em React + Vite
-├── .gitignore
+flora-acessorios-pi4/
+├── api/
+│   └── index.js                                  # Ponto de entrada Serverless da API na Vercel
+├── back-end/
+│   ├── src/
+│   │   ├── config/database.js                    # Conexão MySQL + Fallback Resiliente
+│   │   ├── controllers/                          # Controllers (auth, produtos, vendas, dashboard)
+│   │   └── routes/                               # Rotas Express REST
+│   └── package.json
+├── database/
+│   ├── schema.sql                                # DDL completo com todas as tabelas
+│   └── seed.sql                                  # DML de carga inicial com vendas e dados de IA
+├── front-end/
+│   ├── components/                               # Componentes modulares React (Dashboard, IA, etc.)
+│   ├── lib/                                      # Provedores de inventário e cálculo preditivo
+│   ├── pages/                                    # Telas (Home, Login, Orders, Products, etc.)
+│   ├── services/api.js                           # Camada de comunicação HTTP
+│   └── vite.config.js
+├── pesos_modelo/                                 # Pesos treinados da Rede Neural (PyTorch)
+├── Rede_Neural_Multilayer_Perceptron_MLP_(Teste).ipynb  # Treinamento e validação do modelo de IA
+├── criar-banco.bat                               # Script Windows para criar e popular o MySQL
+├── iniciar.bat                                   # Script Windows para subir Back + Front de uma vez
+├── vercel.json                                   # Configuração de build e rotas para Vercel
+├── DOCUMENTACAO_TECNICA_FLORA_PI4.md             # Documentação técnica detalhada do projeto
 └── README.md
 ```
 
 ---
 
-## 🎨 Front-End (Visão Geral)
+## 💻 Como Rodar Localmente (Windows + XAMPP)
 
-O front-end foi completamente modernizado, oferecendo uma experiência de usuário (UI/UX) responsiva, interativa e acessível.
+Siga o passo a passo simplificado baseado no roteiro oficial do projeto:
 
-### 🛠️ Tecnologias e Bibliotecas Utilizadas
+### Pré-requisitos
+1. **Node.js** (versão 18 ou superior instalada).
+2. **XAMPP** com o serviço **MySQL** iniciado na porta padrão `3306` (usuário `root`, sem senha).
 
-* **Framework & Build:** [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) (execução ultrarrápida e Hot Module Replacement).
-* **Estilização:** [Tailwind CSS](https://tailwindcss.com/) com suporte a classes utilitárias e variáveis semânticas de tema.
-* **Componentes de UI:** [Shadcn UI](https://ui.shadcn.com/) (primitivas acessíveis baseadas em [Radix UI](https://www.radix-ui.com/)).
-* **Gráficos & Visualização:** [Recharts](https://recharts.org/) (gráficos de linha, barras e relatórios dinâmicos).
-* **Interatividade Avançada:** `@dnd-kit` (sistema de arrastar e soltar / *Drag & Drop* dos widgets do painel).
-* **Roteamento:** [React Router DOM](https://reactrouter.com/) (rotas protegidas e navegação SPA).
-* **Ícones:** [Lucide React](https://lucide.dev/).
-* **Feedback ao Usuário:** Notificações flutuantes via Sonner / Toast.
-* **Tema:** Suporte nativo a Modo Claro e Modo Escuro (*Dark Mode*).
+### 1️⃣ Criar e popular o Banco de Dados
+Abra a pasta do projeto e dê um duplo clique no arquivo:
+```cmd
+criar-banco.bat
+```
+*(O script conectará ao MySQL do XAMPP, criará a base `flora_acessorios` e carregará as tabelas e dados de teste).*
+
+### 2️⃣ Iniciar o Sistema Completo (Back-End + Front-End)
+Dê um duplo clique no arquivo:
+```cmd
+iniciar.bat
+```
+*(O script instalará dependências se necessário e abrirá os terminais do Back-End na porta `3000` e Front-End na porta `5173`)*.
+
+Acesse no navegador:
+👉 **http://localhost:5173**
 
 ---
 
-### 🖥️ Telas e Módulos Implementados
+## ☁️ Deploy em Nuvem (Vercel)
+
+O projeto foi configurado como um monorepo unificado pronto para a **Vercel**:
+1. Conecte o repositório GitHub à Vercel.
+2. Não altere o *Root Directory* (deixe a raiz `./`).
+3. O arquivo [`vercel.json`](vercel.json) roteia automaticamente:
+   - `/api/*` ➡️ Função Serverless [`api/index.js`](api/index.js) (Express).
+   - `/*` ➡️ Aplicação React compilada (`front-end/dist`).
+4. Possui camada de **persistência híbrida no navegador**, permitindo que o avaliador teste cadastros, exclusões e lançamentos de vendas diretamente em nuvem.
+
+---
+
+## 🔑 Credenciais de Teste
+
+| Papel | E-mail | Senha |
+| :--- | :--- | :--- |
+| **Administrador Mestre** | `admin@flora.com` | `Flora2026@` |
+| **Novo Usuário** | *Qualquer e-mail cadastrado na tela de registro* | *Senha definida no cadastro* |
+
+---
+
+## 📱 Telas e Funcionalidades
 
 1. **Dashboard Principal (`/`):**
-   * Grade de cartões reorganizáveis por *drag-and-drop*.
-   * Indicadores-chave (KPIs): faturamento, saúde do estoque e alertas de estoque baixo.
-   * Gráficos analíticos de nível de estoque, insights de clientes e previsão de demanda.
-2. **Gerenciamento de Pedidos (`/orders`):**
-   * Formulário intuitivo de inserção de vendas (seleção de vendedor, produto e cálculo de valor).
-   * Tabela resumida das vendas mais recentes.
+   - Cartões de KPI: Faturamento Total, Saúde do Estoque, Alertas de Estoque Mínimo.
+   - Gráfico de Previsão de Demanda com IA e Tendências temporais.
+   - Insights de Clientes e Produtos mais vendidos.
+2. **Lançamento de Vendas & PDV (`/orders`):**
+   - Registro de vendas com seleção de vendedor, produto, quantidade e valor.
+   - Tabela em tempo real das vendas mais recentes.
 3. **Catálogo de Produtos (`/products`):**
-   * Listagem de estoque com indicadores visuais de urgência (crítico, baixo, saudável).
-   * Filtros por categoria e disponibilidade.
-   * Botões de ajuste rápido de quantidade (+ / -).
-   * Botão de importação em lote via arquivo CSV.
+   - Listagem com alertas de nível crítico, ajuste rápido de estoque (+ / -) e importação CSV.
 4. **Ranking de Vendedores (`/leaderboard`):**
-   * Pódio visual com medalhas e faturamento total ordenado por vendedor.
-5. **Relatório de Vendas (`/sales-report`):**
-   * Consolidação do faturamento agrupado por mês e faturamento total do período.
-6. **Histórico de Transações (`/history`):**
-   * Tabela analítica completa com detalhes de data, vendedor, produto e valor de cada transação.
-7. **Central de Mensagens (`/messages`):**
-   * Interface de chat interno e mural de avisos entre a equipe.
-8. **Favoritos (`/favourites`):**
-   * Painel de acesso rápido aos produtos marcados com estrela/coração.
-9. **Configurações & Categorias (`/settings`):**
-   * Criação e exclusão dinâmica de categorias de produtos.
-10. **Autenticação & Perfil:**
-    * Telas completas de Login (`/login`), Cadastro (`/register`), Esqueci a Senha (`/forgot-password`), Redefinição de Senha (`/reset-password`) e Perfil (`/profile`).
+   - Pódio dos vendedores com maior faturamento e número de transações.
+5. **Relatórios e Histórico (`/sales-report` e `/history`):**
+   - Análise de vendas agrupadas por mês e detalhamento transacional completo.
+6. **Configurações & Categorias (`/settings`):**
+   - Gerenciamento dinâmico de categorias de semijoias.
 
 ---
 
-### 🚀 Como Executar o Front-End Localmente
+## 📄 Licença e Direitos
 
-1. Entre no diretório do front-end:
-   ```bash
-   cd front-end
-   ```
-
-2. Instale as dependências:
-   ```bash
-   npm install
-   ```
-
-3. Inicie o servidor de desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-
-4. Abra seu navegador no endereço indicado (por padrão: `http://127.0.0.1:5173`).
-
----
-
-## 🤝 Alinhamento para Back-End & Banco de Dados
-
-* **Ponto de Integração:** Toda a lógica de comunicação de dados do front-end está isolada no arquivo [`front-end/services/api.js`](front-end/services/api.js).
-* **Próximo Passo do Grupo:** Assim que a equipe definir a nova stack de Back-End (ex.: Node.js, Python/FastAPI, Java/Spring, PHP, etc.) e o modelo de banco de dados (relacional ou não), bastará conectar as funções de `api.js` aos novos endpoints REST HTTP.
+Projeto desenvolvido como parte dos requisitos do **Projeto Integrador (PI 4)** por estudantes de graduação. Uso acadêmico e institucional.
