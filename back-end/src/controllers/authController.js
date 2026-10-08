@@ -17,6 +17,20 @@ function validatePasswordPolicy(password) {
   return null;
 }
 
+function getBaseUrl(req) {
+  if (process.env.API_BASE_URL) return process.env.API_BASE_URL;
+  const protocol = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http') || 'http';
+  const host = req.headers['x-forwarded-host'] || req.get('host') || `127.0.0.1:${process.env.PORT || 3000}`;
+  return `${protocol}://${host}/api/v1`;
+}
+
+function getFrontendUrl(req) {
+  if (process.env.FRONTEND_URL) return process.env.FRONTEND_URL;
+  const protocol = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http') || 'http';
+  const host = req.headers['x-forwarded-host'] || req.get('host') || '127.0.0.1:5173';
+  return `${protocol}://${host}`;
+}
+
 // 1. Cadastrar Usuário
 exports.register = async (req, res) => {
   try {
@@ -47,7 +61,7 @@ exports.register = async (req, res) => {
       [nome.trim(), email.trim().toLowerCase(), senhaHash, 0, tokenVerificacao]
     );
 
-    const baseUrl = process.env.API_BASE_URL || `http://127.0.0.1:${process.env.PORT || 3000}/api/v1`;
+    const baseUrl = getBaseUrl(req);
     const verifyUrl = `${baseUrl}/auth/verify-email?token=${tokenVerificacao}`;
 
     // Mensagem EXATA exigida pelo tutorial no console do Back-end
@@ -106,7 +120,7 @@ exports.verifyEmail = async (req, res) => {
 
     await db.query('UPDATE usuarios SET is_verified = 1, token_verificacao = NULL WHERE token_verificacao = ?', [token]);
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:5173';
+    const frontendUrl = getFrontendUrl(req);
 
     // Página HTML que exibe exatamente "E-mail confirmado" conforme passo 7 do tutorial
     return res.status(200).send(`
@@ -203,7 +217,7 @@ exports.forgotPassword = async (req, res) => {
     }
 
     const user = users[0];
-    const baseUrl = process.env.API_BASE_URL || `http://127.0.0.1:${process.env.PORT || 3000}/api/v1`;
+    const baseUrl = getBaseUrl(req);
 
     // Conforme o Passo 7 do tutorial:
     // "Para uma conta ainda não confirmada, um novo link de confirmação aparecerá na janela do back-end."
@@ -220,7 +234,8 @@ exports.forgotPassword = async (req, res) => {
       return res.json({
         success: true,
         message: 'Conta ainda não confirmada. Um novo link de confirmação foi emitido no back-end.',
-        verificationUrl: verifyUrl
+        verificationUrl: verifyUrl,
+        token: novoToken
       });
     }
 
@@ -228,7 +243,7 @@ exports.forgotPassword = async (req, res) => {
     const resetToken = crypto.randomBytes(32).toString('hex');
     await db.query('UPDATE usuarios SET token_reset = ? WHERE email = ?', [resetToken, user.email]);
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:5173';
+    const frontendUrl = getFrontendUrl(req);
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
     console.log('\n================================================================');

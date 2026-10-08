@@ -35,7 +35,11 @@ export default function ForgotPassword() {
       }
 
       setMensagem(data.message || 'Se o e-mail estiver cadastrado, as instruções foram processadas no back-end.');
-      if (data.verificationUrl) setVerificationUrl(data.verificationUrl);
+      if (data.token) {
+        setVerificationUrl(`${window.location.origin}/api/v1/auth/verify-email?token=${data.token}`);
+      } else if (data.verificationUrl) {
+        setVerificationUrl(data.verificationUrl);
+      }
       if (data.resetUrl) setResetUrl(data.resetUrl);
     } catch (err) {
       setErro(err.message);

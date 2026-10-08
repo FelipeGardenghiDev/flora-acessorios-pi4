@@ -56,10 +56,14 @@ export default function Register() {
             Conforme as orientações do projeto, o link de confirmação foi exibido na janela do <strong>Flora - Back-end</strong>.
           </p>
 
-          {successInfo.verificationUrl && (
+          {successInfo && (
             <div className="pt-2">
               <a
-                href={successInfo.verificationUrl}
+                href={
+                  successInfo.token
+                    ? `${window.location.origin}/api/v1/auth/verify-email?token=${successInfo.token}`
+                    : (successInfo.verificationUrl || '#')
+                }
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-emerald-500 transition-colors w-full"
