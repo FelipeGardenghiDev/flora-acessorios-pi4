@@ -3,7 +3,16 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class'],
-  content: ['./index.html', './**/*.{js,jsx}'],
+  content: [
+    './index.html',
+    './App.jsx',
+    './main.jsx',
+    './components/**/*.{js,jsx}',
+    './pages/**/*.{js,jsx}',
+    './lib/**/*.{js,jsx}',
+    './hooks/**/*.{js,jsx}',
+    './services/**/*.{js,jsx}'
+  ],
   theme: {
     container: {
       center: true,

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
 
 export default function History() {
   const [historico, setHistorico] = useState([]);
@@ -9,33 +8,21 @@ export default function History() {
     async function carregarHistorico() {
       try {
         setLoading(true);
-        const { data, error } = await supabase
-          .from('venda_cab')
-          .select(`
-            ID:id_venda,
-            VALOR:valor_total,
-            DATA_VENDA:data_venda,
-            funcionario:id_func (nome, sobrenome),
-            venda_item (
-              produto:id_prod (categoria, descricao)
-            )
-          `)
-          .order('data_venda', { ascending: false });
-
-        if (error) throw error;
+        const res = await fetch('/api/v1/historico');
+        const data = await res.json();
 
         const formatado = (data || []).map(v => ({
-          ID: v.ID,
-          VENDEDOR: `${v.funcionario?.nome || ''} ${v.funcionario?.sobrenome || ''}`.trim(),
-          CATEGORIA: v.venda_item?.[0]?.produto?.categoria || '',
-          NOME: v.venda_item?.[0]?.produto?.descricao || '',
-          VALOR: v.VALOR,
-          DATA_VENDA: v.DATA_VENDA
+          ID: v.id,
+          VENDEDOR: v.vendedor,
+          CATEGORIA: v.categoria,
+          NOME: v.produto,
+          VALOR: v.valor,
+          DATA_VENDA: v.data
         }));
 
         setHistorico(formatado);
       } catch (error) {
-        console.error("Erro ao carregar histórico:", error);
+        console.error('Erro ao carregar histórico:', error);
       } finally {
         setLoading(false);
       }
@@ -60,21 +47,31 @@ export default function History() {
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="bg-secondary/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="px-5 py-3">ID</th>
+                  <th className="px-5 py-3">Código</th>
                   <th className="px-5 py-3">Data</th>
                   <th className="px-5 py-3">Vendedor</th>
                   <th className="px-5 py-3">Produto</th>
+                  <th className="px-5 py-3">Categoria</th>
                   <th className="px-5 py-3">Valor</th>
                 </tr>
               </thead>
-              <tbody>
-                {historico.map(item => (
-                  <tr key={item.ID} className="border-t border-border">
-                    <td className="px-5 py-4 text-muted-foreground">{item.ID}</td>
-                    <td className="px-5 py-4 text-muted-foreground">{new Date(item.DATA_VENDA).toLocaleDateString()}</td>
-                    <td className="px-5 py-4 font-medium">{item.VENDEDOR}</td>
-                    <td className="px-5 py-4">{item.NOME}</td>
-                    <td className="px-5 py-4 font-semibold">R$ {Number(item.VALOR).toFixed(2)}</td>
+              <tbody className="divide-y divide-border">
+                {historico.map(v => (
+                  <tr key={v.ID} className="hover:bg-secondary/20 transition-colors">
+                    <td className="px-5 py-3 font-mono text-xs text-muted-foreground">#{v.ID}</td>
+                    <td className="px-5 py-3 text-muted-foreground">
+                      {new Date(v.DATA_VENDA).toLocaleDateString('pt-BR')}
+                    </td>
+                    <td className="px-5 py-3 font-medium text-foreground">{v.VENDEDOR}</td>
+                    <td className="px-5 py-3 text-foreground">{v.NOME}</td>
+                    <td className="px-5 py-3">
+                      <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">
+                        {v.CATEGORIA}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 font-heading font-bold text-foreground">
+                      R$ {Number(v.VALOR).toFixed(2)}
+                    </td>
                   </tr>
                 ))}
               </tbody>

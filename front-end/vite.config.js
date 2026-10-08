@@ -13,6 +13,12 @@ export default defineConfig({
   server: {
     port: 5173,
     host: '127.0.0.1', // Foge do bloqueio da palavra "localhost"
-    open: true // Faz o Vite abrir a aba do navegador automaticamente!
+    open: true, // Faz o Vite abrir a aba do navegador automaticamente!
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true
+      }
+    }
   }
 });

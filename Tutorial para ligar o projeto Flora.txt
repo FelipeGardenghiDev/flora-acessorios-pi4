@@ -1,0 +1,99 @@
+Tutorial para ligar o projeto Flora Acessórios
+
+1. Instalar os programas
+
+O computador precisa ter:
+
+Node.js 20.19 ou superior, para executar o projeto.
+
+XAMPP, para executar o banco de dados.
+
+Internet na primeira execução, para instalar as dependências.
+
+2. Extrair o projeto
+
+Extraia o arquivo Flora_Acessorios_Completo.zip.
+
+Abra a pasta que contém back-end, front-end, database, criar-banco.bat e iniciar.bat.
+
+Os arquivos precisam estar extraídos; não execute diretamente dentro do ZIP.
+
+3. Ligar o banco de dados
+
+Abra o XAMPP Control Panel e clique em Start na linha MySQL.
+
+Ele deve ficar verde, indicando que está ligado. Deixe o MySQL funcionando enquanto usa o sistema.
+
+4. Preparar o banco — primeira execução
+
+Dê dois cliques em criar-banco.bat.
+
+Espere aparecer “Banco pronto”. Depois pressione uma tecla para fechar essa janela.
+
+O script está configurado para XAMPP instalado em C:\xampp, com usuário root sem senha. Se sua instalação for diferente, será necessário ajustar a configuração.
+
+5. Ligar o site e o back-end
+
+Dê dois cliques em iniciar.bat.
+
+Na primeira vez, aguarde a instalação das dependências. Serão abertas duas janelas:
+
+Flora - Back-end: deve mostrar “Flora API em http://127.0.0.1:3000/api/v1”.
+
+Flora - Front-end: deve mostrar o endereço “http://127.0.0.1:5173”.
+
+Mantenha essas duas janelas abertas. A janela inicial do script fecha sozinha; isso é normal.
+
+6. Abrir o sistema
+
+Abra no navegador:
+
+http://127.0.0.1:5173
+
+7. Cadastrar e ativar sua conta
+
+Clique em Cadastre-se e preencha nome, e-mail e senha.
+
+A senha precisa ter pelo menos oito caracteres, incluindo uma letra e um número.
+
+Depois que o cadastro der certo:
+
+Abra a janela Flora - Back-end.
+
+Procure a mensagem “Confirme seu e-mail”.
+
+Copie o link inteiro que começa com http://127.0.0.1:3000/api/v1/auth/verify-email?token=.
+
+Cole o link na barra de endereço do navegador e pressione Enter.
+
+Quando aparecer “E-mail confirmado”, volte ao site e faça login.
+
+No modo local, o link aparece nessa janela; ele não é enviado para sua caixa de e-mail.
+
+Se não encontrar o link, clique em Esqueceu a senha? no site e informe o e-mail cadastrado. Para uma conta ainda não confirmada, um novo link de confirmação aparecerá na janela do back-end.
+
+8. Ligar novamente nos próximos dias
+
+Você só precisa:
+
+Ligar o MySQL no XAMPP.
+
+Executar iniciar.bat.
+
+Abrir http://127.0.0.1:5173 e fazer login.
+
+Não precisa criar o banco nem cadastrar a conta novamente.
+
+Se aparecer algum erro
+
+“API indisponível”: confira se a janela Flora - Back-end está aberta e mostrando que a API iniciou.
+
+“MySQL não encontrado”: ligue o MySQL no XAMPP.
+
+“Banco flora_acessorios não existe”: execute criar-banco.bat.
+
+“Confira os campos informados”: confira nome, e-mail e as regras da senha.
+
+“Credenciais inválidas”: confira e-mail, senha e se abriu o link de confirmação.
+
+Se uma janela mostrar outro erro, tire um print dela para identificar o problema.

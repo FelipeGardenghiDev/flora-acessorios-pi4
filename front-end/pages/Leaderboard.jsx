@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient';
 
 const medalClass = ['bg-[#ffd166]/20 text-[#b8860b]', 'bg-secondary text-secondary-foreground', 'bg-[#ff8db8]/15 text-[#ff8db8]'];
 
@@ -12,37 +11,11 @@ export default function Leaderboard() {
     async function carregarLeaderboard() {
       try {
         setLoading(true);
-        const { data, error } = await supabase
-          .from('venda_cab')
-          .select(`
-            valor_total,
-            funcionario:id_func (id_func, nome, sobrenome)
-          `);
-
-        if (error) throw error;
-
-        const totaisPorVendedor = {};
-
-        data.forEach(venda => {
-          const func = venda.funcionario;
-          if (!func) return;
-
-          const nomeCompleto = `${func.nome} ${func.sobrenome || ''}`.trim();
-
-          if (!totaisPorVendedor[nomeCompleto]) {
-            totaisPorVendedor[nomeCompleto] = 0;
-          }
-          totaisPorVendedor[nomeCompleto] += Number(venda.valor_total || 0);
-        });
-
-        const rankingOrdenado = Object.keys(totaisPorVendedor).map(nome => ({
-          nome,
-          total: totaisPorVendedor[nome]
-        })).sort((a, b) => b.total - a.total);
-
-        setRanking(rankingOrdenado);
+        const res = await fetch('/api/v1/leaderboard');
+        const data = await res.json();
+        setRanking(data || []);
       } catch (error) {
-        console.error("Erro ao carregar o leaderboard:", error);
+        console.error('Erro ao carregar o leaderboard:', error);
       } finally {
         setLoading(false);
       }
@@ -59,17 +32,20 @@ export default function Leaderboard() {
 
       {ranking.length === 0 ? (
         <p className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
-          Nenhum dado de vendas disponível para o ranking.
+          Nenhuma venda registrada ainda para calcular o ranking.
         </p>
       ) : (
-        <div className="space-y-3">
-          {ranking.map((item, index) => (
-            <div key={item.nome} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
-              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold ${medalClass[index] || 'bg-muted text-muted-foreground'}`}>
-                {index < 3 ? <Trophy className="h-4 w-4" /> : index + 1}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {ranking.map((item, idx) => (
+            <div key={item.nome} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <div className={`flex h-12 w-12 items-center justify-center rounded-xl font-heading text-lg font-bold ${medalClass[idx] || 'bg-muted text-muted-foreground'}`}>
+                {idx < 3 ? <Trophy className="h-6 w-6" /> : `#${idx + 1}`}
               </div>
-              <p className="flex-1 font-medium text-foreground">{item.nome}</p>
-              <p className="font-heading text-lg font-bold text-primary">R$ {item.total.toFixed(2)}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-heading text-base font-bold text-foreground">{item.nome}</p>
+                <p className="text-xs text-muted-foreground">Total em Vendas</p>
+                <p className="font-heading text-lg font-extrabold text-primary">R$ {Number(item.total).toFixed(2)}</p>
+              </div>
             </div>
           ))}
         </div>

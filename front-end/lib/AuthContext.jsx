@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { supabase } from './supabaseClient';
 
 const AuthContext = createContext();
 
@@ -11,63 +10,65 @@ export const AuthProvider = ({ children }) => {
   const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
-    const getInitialSession = async () => {
+    const checkAuth = async () => {
       try {
         setIsLoadingAuth(true);
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) throw error;
+        const token = localStorage.getItem('flora_token');
+        const storedUser = localStorage.getItem('flora_user');
 
-        if (session) {
-          setSession(session);
-          setUser(session.user);
+        if (token && storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          setSession({ token, user: parsedUser });
           setIsAuthenticated(true);
+
+          // Valida no backend de forma transparente
+          fetch('/api/v1/auth/me', {
+            headers: { Authorization: `Bearer ${token}` }
+          }).then(res => {
+            if (!res.ok) {
+              logout();
+            }
+          }).catch(() => {});
         } else {
-          setSession(null);
           setUser(null);
+          setSession(null);
           setIsAuthenticated(false);
         }
-      } catch (error) {
-        console.error('Erro ao verificar sessão do Supabase:', error);
-        setAuthError({
-          type: 'auth_error',
-          message: error.message || 'Erro ao carregar estado de autenticação'
-        });
+      } catch (err) {
+        console.error('Erro ao verificar sessão local:', err);
       } finally {
         setIsLoadingAuth(false);
       }
     };
 
-    getInitialSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setSession(session);
-        setUser(session.user);
-        setIsAuthenticated(true);
-      } else {
-        setSession(null);
-        setUser(null);
-        setIsAuthenticated(false);
-      }
-      setIsLoadingAuth(false);
-    });
-
-    return () => {
-      subscription?.unsubscribe();
-    };
+    checkAuth();
   }, []);
 
   const loginWithPassword = async (email, password) => {
     try {
       setAuthError(null);
       setIsLoadingAuth(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+
+      const response = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
       });
 
-      if (error) throw error;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Falha ao realizar login');
+      }
+
+      localStorage.setItem('flora_token', data.token);
+      localStorage.setItem('flora_user', JSON.stringify(data.user));
+
+      setUser(data.user);
+      setSession({ token: data.token, user: data.user });
+      setIsAuthenticated(true);
+
       return { success: true, data };
     } catch (error) {
       setAuthError({
@@ -84,15 +85,23 @@ export const AuthProvider = ({ children }) => {
     try {
       setAuthError(null);
       setIsLoadingAuth(true);
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: metadata,
-        },
+
+      const response = await fetch('/api/v1/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: metadata.nome || 'Usuário Flora',
+          email,
+          password
+        })
       });
 
-      if (error) throw error;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Falha ao registrar usuário');
+      }
+
       return { success: true, data };
     } catch (error) {
       setAuthError({
@@ -108,14 +117,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       setIsLoadingAuth(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
+      localStorage.removeItem('flora_token');
+      localStorage.removeItem('flora_user');
       setUser(null);
       setSession(null);
       setIsAuthenticated(false);
-    } catch (error) {
-      console.error('Erro ao sair:', error);
     } finally {
       setIsLoadingAuth(false);
     }

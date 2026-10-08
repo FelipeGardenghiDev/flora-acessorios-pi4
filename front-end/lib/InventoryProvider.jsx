@@ -1,13 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { supabase } from './supabaseClient';
 import { computeInventoryMetrics } from './dashboardMetrics';
 
 const InventoryContext = createContext();
 
-// PostgREST retorna colunas `numeric` como string (evita perda de precisão) —
-// convertemos aqui, na borda, para que todo o app trabalhe com number.
-const normalizeProduct = (p) => ({ ...p, stock: Number(p.stock), minimum_stock: Number(p.minimum_stock), unit_price: Number(p.unit_price) });
-const normalizeDemandRecord = (r) => ({ ...r, units_sold: Number(r.units_sold) });
+const normalizeProduct = (p) => ({
+  ...p,
+  id: p.id || p.id_prod || p.sku,
+  sku: p.sku || p.id_prod || p.id,
+  name: p.name || p.descricao,
+  category: p.category || p.categoria,
+  stock: Number(p.stock !== undefined ? p.stock : p.estoque),
+  minimum_stock: Number(p.minimum_stock !== undefined ? p.minimum_stock : (p.estoque_minimo || 10)),
+  unit_price: Number(p.unit_price !== undefined ? p.unit_price : p.valor)
+});
+
+const normalizeDemandRecord = (r) => ({
+  ...r,
+  units_sold: Number(r.units_sold)
+});
 
 export function InventoryProvider({ children }) {
   const [products, setProducts] = useState([]);
@@ -18,29 +28,17 @@ export function InventoryProvider({ children }) {
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const { data: productsData, error: productsError } = await supabase
-        .from('products')
-        .select('*');
+      const [resProd, resCat, resDemand] = await Promise.all([
+        fetch('/api/v1/products').then(r => r.json()).catch(() => []),
+        fetch('/api/v1/categories').then(r => r.json()).catch(() => []),
+        fetch('/api/v1/demand-records').then(r => r.json()).catch(() => [])
+      ]);
 
-      if (productsError) throw productsError;
-
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from('categories')
-        .select('*');
-
-      if (categoriesError) console.warn('Tabela de categorias não configurada ou sem registros.');
-
-      const { data: demandData, error: demandError } = await supabase
-        .from('demand_records')
-        .select('*');
-
-      if (demandError) console.warn('Tabela de histórico de demanda não configurada ou sem registros.');
-
-      setProducts((productsData || []).map(normalizeProduct));
-      setCategories(categoriesData || []);
-      setDemandRecords((demandData || []).map(normalizeDemandRecord));
+      setProducts((resProd || []).map(normalizeProduct));
+      setCategories(resCat || []);
+      setDemandRecords((resDemand || []).map(normalizeDemandRecord));
     } catch (err) {
-      console.error('Erro ao buscar inventário no Supabase:', err);
+      console.error('Erro ao buscar inventário:', err);
     } finally {
       setLoading(false);
     }
@@ -53,72 +51,58 @@ export function InventoryProvider({ children }) {
   }, []);
 
   const addProduct = async (productData) => {
-    const { data, error } = await supabase
-      .from('products')
-      .insert([productData])
-      .select();
-
-    if (error) {
-      console.error('Erro ao adicionar produto:', error);
-      throw error;
+    const res = await fetch('/api/v1/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao adicionar produto');
     }
-    setProducts((prev) => [...prev, ...data.map(normalizeProduct)]);
-    return data;
+    const created = await res.json();
+    const normalized = normalizeProduct(created);
+    setProducts((prev) => [...prev, normalized]);
+    return normalized;
   };
 
   const updateProduct = async (id, productData) => {
-    const { data, error } = await supabase
-      .from('products')
-      .update(productData)
-      .eq('id', id)
-      .select();
-
-    if (error) {
-      console.error('Erro ao atualizar produto:', error);
-      throw error;
+    const res = await fetch(`/api/v1/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao atualizar produto');
     }
-    const updated = normalizeProduct(data[0]);
-    setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
-    return data;
+    const updated = await res.json();
+    const normalized = normalizeProduct(updated);
+    setProducts((prev) => prev.map((p) => (p.id === id ? normalized : p)));
+    return normalized;
   };
 
   const deleteProduct = async (id) => {
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error('Erro ao excluir produto:', error);
-      throw error;
-    }
+    const res = await fetch(`/api/v1/products/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Erro ao excluir produto');
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
 
   const addCategory = async (categoryData) => {
-    const { data, error } = await supabase
-      .from('categories')
-      .insert([categoryData])
-      .select();
-
-    if (error) {
-      console.error('Erro ao adicionar categoria:', error);
-      throw error;
-    }
-    setCategories((prev) => [...prev, ...data]);
-    return data;
+    const res = await fetch('/api/v1/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(categoryData)
+    });
+    if (!res.ok) throw new Error('Erro ao adicionar categoria');
+    const created = await res.json();
+    setCategories((prev) => [...prev, created]);
+    return created;
   };
 
   const deleteCategory = async (id) => {
-    const { error } = await supabase
-      .from('categories')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error('Erro ao excluir categoria:', error);
-      throw error;
-    }
+    const res = await fetch(`/api/v1/categories/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Erro ao excluir categoria');
     setCategories((prev) => prev.filter((c) => c.id !== id));
   };
 
@@ -130,12 +114,12 @@ export function InventoryProvider({ children }) {
         demandRecords,
         metrics,
         loading,
-        fetchInventory,
         addProduct,
         updateProduct,
         deleteProduct,
         addCategory,
         deleteCategory,
+        refreshInventory: fetchInventory
       }}
     >
       {children}
@@ -143,4 +127,10 @@ export function InventoryProvider({ children }) {
   );
 }
 
-export const useInventory = () => useContext(InventoryContext);
+export function useInventory() {
+  const context = useContext(InventoryContext);
+  if (!context) {
+    throw new Error('useInventory deve ser usado dentro de um InventoryProvider');
+  }
+  return context;
+}

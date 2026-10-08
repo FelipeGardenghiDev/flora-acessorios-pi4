@@ -1,0 +1,524 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nome": "Administrador Flora",
+      "email": "admin@flora.com",
+      "senha": "$2a$10$wT0l8D3K12Y793oGkrhHgeZ4lqNqXQ73uWn9487c6v2rVbm09QxG2",
+      "is_verified": 1,
+      "token_verificacao": null,
+      "token_reset": null,
+      "criado_em": "2026-10-08T18:17:59.469Z"
+    },
+    {
+      "id": 2,
+      "nome": "Felipe Testador",
+      "email": "felipe.teste@flora.com",
+      "senha": "$2b$10$SSg1z5JFttwp.9cjNoGmreZ0FcVficJED9KBhzSDRwwHXs/M/Repi",
+      "is_verified": 1,
+      "token_verificacao": null,
+      "token_reset": null,
+      "criado_em": "2026-10-08T18:18:26.885Z"
+    }
+  ],
+  "funcionario": [
+    {
+      "id_func": 1,
+      "nome": "Mariana",
+      "sobrenome": "Silva",
+      "cpf": "123.456.789-01",
+      "admissao": "2025-01-15",
+      "desligamento": null
+    },
+    {
+      "id_func": 2,
+      "nome": "Lucas",
+      "sobrenome": "Oliveira",
+      "cpf": "234.567.890-12",
+      "admissao": "2025-02-01",
+      "desligamento": null
+    },
+    {
+      "id_func": 3,
+      "nome": "Beatriz",
+      "sobrenome": "Santos",
+      "cpf": "345.678.901-23",
+      "admissao": "2025-03-10",
+      "desligamento": null
+    },
+    {
+      "id_func": 4,
+      "nome": "Felipe",
+      "sobrenome": "Gardenghi",
+      "cpf": "456.789.012-34",
+      "admissao": "2025-01-10",
+      "desligamento": null
+    }
+  ],
+  "categorias": [
+    {
+      "id": 1,
+      "nome": "Anéis",
+      "slug": "aneis"
+    },
+    {
+      "id": 2,
+      "nome": "Brincos",
+      "slug": "brincos"
+    },
+    {
+      "id": 3,
+      "nome": "Colares",
+      "slug": "colares"
+    },
+    {
+      "id": 4,
+      "nome": "Pulseiras",
+      "slug": "pulseiras"
+    },
+    {
+      "id": 5,
+      "nome": "Braceletes",
+      "slug": "braceletes"
+    }
+  ],
+  "produto": [
+    {
+      "id_prod": "ANE-001",
+      "categoria": "Anéis",
+      "descricao": "Anel Solitário Prata 925 com Zircônia",
+      "valor": 129.9,
+      "estoque": 42,
+      "estoque_minimo": 10
+    },
+    {
+      "id_prod": "ANE-002",
+      "categoria": "Anéis",
+      "descricao": "Anel Falange Regulável Dourado",
+      "valor": 79.9,
+      "estoque": 18,
+      "estoque_minimo": 12
+    },
+    {
+      "id_prod": "ANE-003",
+      "categoria": "Anéis",
+      "descricao": "Anel Três Fios Folheado a Ouro 18k",
+      "valor": 159,
+      "estoque": 8,
+      "estoque_minimo": 10
+    },
+    {
+      "id_prod": "BRI-001",
+      "categoria": "Brincos",
+      "descricao": "Brinco Argola Cravejada Zircônias",
+      "valor": 89.9,
+      "estoque": 65,
+      "estoque_minimo": 15
+    },
+    {
+      "id_prod": "BRI-002",
+      "categoria": "Brincos",
+      "descricao": "Brinco Ponto de Luz Prata 925",
+      "valor": 49.9,
+      "estoque": 80,
+      "estoque_minimo": 20
+    },
+    {
+      "id_prod": "BRI-003",
+      "categoria": "Brincos",
+      "descricao": "Brinco Cascata Pérolas Barrocas",
+      "valor": 119.5,
+      "estoque": 14,
+      "estoque_minimo": 10
+    },
+    {
+      "id_prod": "COL-001",
+      "categoria": "Colares",
+      "descricao": "Colar Gravatinha com Zircônias",
+      "valor": 149.9,
+      "estoque": 31,
+      "estoque_minimo": 10
+    },
+    {
+      "id_prod": "COL-002",
+      "categoria": "Colares",
+      "descricao": "Colar Choker Elos Dourados",
+      "valor": 189,
+      "estoque": 25,
+      "estoque_minimo": 8
+    },
+    {
+      "id_prod": "PUL-001",
+      "categoria": "Pulseiras",
+      "descricao": "Pulseira Riviera Cristal Regulável",
+      "valor": 139.9,
+      "estoque": 38,
+      "estoque_minimo": 12
+    },
+    {
+      "id_prod": "BRA-001",
+      "categoria": "Braceletes",
+      "descricao": "Bracelete Rígido Minimalista Prata",
+      "valor": 169,
+      "estoque": 19,
+      "estoque_minimo": 10
+    },
+    {
+      "id_prod": "BRA-002",
+      "categoria": "Braceletes",
+      "descricao": "Bracelete Folheado Ondulado",
+      "valor": 199.9,
+      "estoque": 6,
+      "estoque_minimo": 8
+    }
+  ],
+  "venda_cab": [
+    {
+      "id_venda": 1,
+      "id_func": 1,
+      "data_venda": "2026-09-01",
+      "valor_total": 219.8
+    },
+    {
+      "id_venda": 2,
+      "id_func": 2,
+      "data_venda": "2026-09-05",
+      "valor_total": 189
+    },
+    {
+      "id_venda": 3,
+      "id_func": 3,
+      "data_venda": "2026-09-12",
+      "valor_total": 338.9
+    },
+    {
+      "id_venda": 4,
+      "id_func": 4,
+      "data_venda": "2026-09-18",
+      "valor_total": 299.8
+    },
+    {
+      "id_venda": 5,
+      "id_func": 1,
+      "data_venda": "2026-09-25",
+      "valor_total": 129.9
+    },
+    {
+      "id_venda": 6,
+      "id_func": 2,
+      "data_venda": "2026-10-01",
+      "valor_total": 278.9
+    },
+    {
+      "id_venda": 7,
+      "id_func": 3,
+      "data_venda": "2026-10-03",
+      "valor_total": 149.9
+    },
+    {
+      "id_venda": 8,
+      "id_func": 4,
+      "data_venda": "2026-10-06",
+      "valor_total": 418.8
+    }
+  ],
+  "venda_item": [
+    {
+      "id_item": 1,
+      "id_venda": 1,
+      "id_prod": "ANE-001",
+      "quantidade": 1,
+      "valor_unit": 129.9
+    },
+    {
+      "id_item": 2,
+      "id_venda": 1,
+      "id_prod": "BRI-001",
+      "quantidade": 1,
+      "valor_unit": 89.9
+    },
+    {
+      "id_item": 3,
+      "id_venda": 2,
+      "id_prod": "COL-002",
+      "quantidade": 1,
+      "valor_unit": 189
+    },
+    {
+      "id_item": 4,
+      "id_venda": 3,
+      "id_prod": "PUL-001",
+      "quantidade": 1,
+      "valor_unit": 139.9
+    },
+    {
+      "id_item": 5,
+      "id_venda": 3,
+      "id_prod": "BRA-002",
+      "quantidade": 1,
+      "valor_unit": 199.9
+    },
+    {
+      "id_item": 6,
+      "id_venda": 4,
+      "id_prod": "COL-001",
+      "quantidade": 2,
+      "valor_unit": 149.9
+    },
+    {
+      "id_item": 7,
+      "id_venda": 5,
+      "id_prod": "ANE-001",
+      "quantidade": 1,
+      "valor_unit": 129.9
+    },
+    {
+      "id_item": 8,
+      "id_venda": 6,
+      "id_prod": "BRI-001",
+      "quantidade": 1,
+      "valor_unit": 89.9
+    },
+    {
+      "id_item": 9,
+      "id_venda": 6,
+      "id_prod": "COL-002",
+      "quantidade": 1,
+      "valor_unit": 189
+    },
+    {
+      "id_item": 10,
+      "id_venda": 7,
+      "id_prod": "COL-001",
+      "quantidade": 1,
+      "valor_unit": 149.9
+    },
+    {
+      "id_item": 11,
+      "id_venda": 8,
+      "id_prod": "BRA-001",
+      "quantidade": 1,
+      "valor_unit": 169
+    },
+    {
+      "id_item": 12,
+      "id_venda": 8,
+      "id_prod": "ANE-003",
+      "quantidade": 1,
+      "valor_unit": 159
+    },
+    {
+      "id_item": 13,
+      "id_venda": 8,
+      "id_prod": "BRI-001",
+      "quantidade": 1,
+      "valor_unit": 89.9
+    }
+  ],
+  "demand_records": [
+    {
+      "id": 1,
+      "product_sku": "ANE-001",
+      "date": "2026-09-10",
+      "units_sold": 4
+    },
+    {
+      "id": 2,
+      "product_sku": "ANE-001",
+      "date": "2026-09-15",
+      "units_sold": 5
+    },
+    {
+      "id": 3,
+      "product_sku": "ANE-001",
+      "date": "2026-09-20",
+      "units_sold": 6
+    },
+    {
+      "id": 4,
+      "product_sku": "ANE-001",
+      "date": "2026-09-25",
+      "units_sold": 5
+    },
+    {
+      "id": 5,
+      "product_sku": "ANE-001",
+      "date": "2026-09-30",
+      "units_sold": 7
+    },
+    {
+      "id": 6,
+      "product_sku": "ANE-001",
+      "date": "2026-10-05",
+      "units_sold": 8
+    },
+    {
+      "id": 7,
+      "product_sku": "BRI-001",
+      "date": "2026-09-10",
+      "units_sold": 8
+    },
+    {
+      "id": 8,
+      "product_sku": "BRI-001",
+      "date": "2026-09-15",
+      "units_sold": 7
+    },
+    {
+      "id": 9,
+      "product_sku": "BRI-001",
+      "date": "2026-09-20",
+      "units_sold": 10
+    },
+    {
+      "id": 10,
+      "product_sku": "BRI-001",
+      "date": "2026-09-25",
+      "units_sold": 9
+    },
+    {
+      "id": 11,
+      "product_sku": "BRI-001",
+      "date": "2026-09-30",
+      "units_sold": 11
+    },
+    {
+      "id": 12,
+      "product_sku": "BRI-001",
+      "date": "2026-10-05",
+      "units_sold": 12
+    },
+    {
+      "id": 13,
+      "product_sku": "COL-001",
+      "date": "2026-09-10",
+      "units_sold": 3
+    },
+    {
+      "id": 14,
+      "product_sku": "COL-001",
+      "date": "2026-09-15",
+      "units_sold": 4
+    },
+    {
+      "id": 15,
+      "product_sku": "COL-001",
+      "date": "2026-09-20",
+      "units_sold": 5
+    },
+    {
+      "id": 16,
+      "product_sku": "COL-001",
+      "date": "2026-09-25",
+      "units_sold": 4
+    },
+    {
+      "id": 17,
+      "product_sku": "COL-001",
+      "date": "2026-09-30",
+      "units_sold": 6
+    },
+    {
+      "id": 18,
+      "product_sku": "COL-001",
+      "date": "2026-10-05",
+      "units_sold": 7
+    },
+    {
+      "id": 19,
+      "product_sku": "PUL-001",
+      "date": "2026-09-10",
+      "units_sold": 2
+    },
+    {
+      "id": 20,
+      "product_sku": "PUL-001",
+      "date": "2026-09-15",
+      "units_sold": 3
+    },
+    {
+      "id": 21,
+      "product_sku": "PUL-001",
+      "date": "2026-09-20",
+      "units_sold": 4
+    },
+    {
+      "id": 22,
+      "product_sku": "PUL-001",
+      "date": "2026-09-25",
+      "units_sold": 5
+    },
+    {
+      "id": 23,
+      "product_sku": "PUL-001",
+      "date": "2026-09-30",
+      "units_sold": 4
+    },
+    {
+      "id": 24,
+      "product_sku": "PUL-001",
+      "date": "2026-10-05",
+      "units_sold": 6
+    },
+    {
+      "id": 25,
+      "product_sku": "BRA-001",
+      "date": "2026-09-10",
+      "units_sold": 1
+    },
+    {
+      "id": 26,
+      "product_sku": "BRA-001",
+      "date": "2026-09-15",
+      "units_sold": 2
+    },
+    {
+      "id": 27,
+      "product_sku": "BRA-001",
+      "date": "2026-09-20",
+      "units_sold": 3
+    },
+    {
+      "id": 28,
+      "product_sku": "BRA-001",
+      "date": "2026-09-25",
+      "units_sold": 2
+    },
+    {
+      "id": 29,
+      "product_sku": "BRA-001",
+      "date": "2026-09-30",
+      "units_sold": 4
+    },
+    {
+      "id": 30,
+      "product_sku": "BRA-001",
+      "date": "2026-10-05",
+      "units_sold": 5
+    }
+  ],
+  "messages": [
+    {
+      "id": 1,
+      "user_name": "Coordenação Flora",
+      "user_email": "coordenacao@flora.com",
+      "text": "Boas-vindas à versão 4.0 do sistema Flora Acessórios! Estoque e dashboard sincronizados.",
+      "created_at": "2026-09-01 09:00:00"
+    },
+    {
+      "id": 2,
+      "user_name": "Mariana Silva",
+      "user_email": "mariana@flora.com",
+      "text": "Aviso: Anel Solitário ANE-001 com alta saída na última semana.",
+      "created_at": "2026-10-02 14:30:00"
+    },
+    {
+      "id": 3,
+      "user_name": "Lucas Oliveira",
+      "user_email": "lucas@flora.com",
+      "text": "Reposição de brincos e colares recebida no estoque central.",
+      "created_at": "2026-10-06 11:15:00"
+    }
+  ],
+  "favourites": []
+}

@@ -1,0 +1,30 @@
+{
+  "name": "flora-acessorios-4",
+  "version": "4.0.0",
+  "private": true,
+  "description": "Sistema Flora Acessórios 4.0 - Monorepo unificado com Back-end API e Front-end React",
+  "scripts": {
+    "install:all": "npm install --prefix back-end && npm install --prefix front-end",
+    "build:frontend": "npm --prefix front-end run build",
+    "build": "npm install --prefix back-end && npm install --prefix front-end && npm --prefix front-end run build",
+    "start": "node back-end/src/server.js",
+    "server": "node back-end/src/server.js",
+    "client": "npm --prefix front-end run dev"
+  },
+  "keywords": [
+    "flora-acessorios",
+    "pi4",
+    "gestao-vendas",
+    "previsao-demanda"
+  ],
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.19.1"
+  },
+  "author": "Equipe Flora Acessórios",
+  "license": "ISC"
+}
