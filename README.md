@@ -79,8 +79,12 @@ O projeto conta com uma abordagem completa de Ciência de Dados para modelagem p
 ### 2. Pesos Salvos (`pesos_modelo/`)
 - Estado dos tensores e pesos aprendidos exportados com `torch.save(model.state_dict(), 'pesos_modelo.pth')`, preservados no repositório.
 
-### 3. Integração na Aplicação Web
-- No Dashboard (`DemandForecastSection` e `DemandForecastChart`), os dados históricos e os registros de demanda (`demand_records`) são plotados com linhas contínuas (histórico real) e linhas tracejadas (projeção preditiva), acompanhados por indicadores visuais de inclinação (*slope*) e badges de **Tendência Alta** ou **Tendência Queda**.
+### 3. Integração em Produção na Aplicação Web (Serverless / Edge AI)
+- **Exportação dos Pesos (`pesos_mlp.json`):** Os tensores treinados do PyTorch foram exportados em formato JSON compacto (~380 KB), viabilizando execução serverless 100% gratuita na Vercel sem necessidade de bibliotecas pesadas de Python.
+- **Motor de Inferência em JavaScript (`mlpService.js` e `mlpInference.js`):**
+  - Executa a passagem direta (*forward pass*) da rede neural calculando os produtos matriciais das camadas e ativações ReLU em menos de 1 milissegundo.
+  - Constrói o vetor de 17 entradas (One-Hot do SKU + funções trigonométricas de sazonalidade temporal) e desnormaliza os 7 neurônios de saída pela escala do MinMaxScaler.
+- **Visualização no Dashboard:** No Dashboard (`DemandForecastSection` e `DemandForecastChart`), os 7 dias projetados pela Rede Neural são plotados em tempo real na curva tracejada com o badge visual **MLP**, permitindo ao gestor antecipar a demanda semanal com precisão científica.
 
 ---
 

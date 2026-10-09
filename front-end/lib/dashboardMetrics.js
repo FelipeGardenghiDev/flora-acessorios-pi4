@@ -23,7 +23,7 @@ export function buildLevelChartData(products, limit = 8) {
 export function buildForecasts(products, demandRecords) {
   const bySku = {};
   products.forEach(p => {
-    bySku[p.sku] = forecastDemand(demandRecords.filter(r => r.product_sku === p.sku));
+    bySku[p.sku] = forecastDemand(demandRecords.filter(r => r.product_sku === p.sku), 30, p.sku);
   });
   return bySku;
 }

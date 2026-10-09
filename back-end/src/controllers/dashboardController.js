@@ -1,4 +1,5 @@
 const db = require('../config/database');
+const { predictProductDemand } = require('../services/mlpService');
 
 // 1. Listar registros históricos de demanda
 exports.listDemandRecords = async (req, res) => {
@@ -17,49 +18,24 @@ exports.listDemandRecords = async (req, res) => {
   }
 };
 
-// 2. Previsão de Demanda Integrada (com base no histórico e tendências)
+// 2. Previsão de Demanda Integrada com Rede Neural MLP (PyTorch)
 exports.getForecast = async (req, res) => {
   try {
     const { days = 30 } = req.query;
     const numDays = Number(days) || 30;
 
-    const records = await db.query('SELECT product_sku, date, units_sold FROM demand_records ORDER BY date ASC');
     const products = await db.query('SELECT id_prod, descricao, categoria, estoque FROM produto');
-
-    const bySku = {};
-    (records || []).forEach(r => {
-      const sku = r.product_sku;
-      if (!bySku[sku]) bySku[sku] = [];
-      bySku[sku].push({
-        date: typeof r.date === 'string' ? r.date.slice(0, 10) : new Date(r.date).toISOString().slice(0, 10),
-        units_sold: Number(r.units_sold)
-      });
-    });
 
     const forecasts = {};
 
     (products || []).forEach(p => {
-      const recs = bySku[p.id_prod] || [];
-      if (!recs.length) {
-        forecasts[p.id_prod] = { total: 0, daily: 0, trend: 'estável' };
-        return;
-      }
-
-      const values = recs.map(r => r.units_sold);
-      const n = values.length;
-      const sumX = n * (n - 1) / 2;
-      const sumY = values.reduce((sum, v) => sum + v, 0);
-      const sumXY = values.reduce((sum, v, idx) => sum + idx * v, 0);
-      const sumXX = values.reduce((sum, _, idx) => sum + idx * idx, 0);
-
-      const slope = n > 1 ? (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX || 1) : 0;
-      const intercept = (sumY - slope * sumX) / n;
-      const daily = Math.max(0, (intercept + slope * (n + numDays / 2)) / 7);
-
+      const mlp = predictProductDemand(p.id_prod);
       forecasts[p.id_prod] = {
-        total: Math.round(daily * numDays),
-        daily: Math.round(daily * 10) / 10,
-        trend: slope > 0.05 ? 'alta' : (slope < -0.05 ? 'baixa' : 'estável')
+        total: Math.round(mlp.daily * numDays),
+        daily: mlp.daily,
+        trend: mlp.trend,
+        next7Days: mlp.next7Days,
+        model: 'PyTorch-MLP (17-256-128-64-32-16-7)'
       };
     });
 
