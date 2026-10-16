@@ -60,7 +60,7 @@ O **Flora Acessórios 4.0** moderniza a gestão de uma loja de semijoias e acess
 
 O projeto conta com uma abordagem completa de Ciência de Dados para modelagem preditiva de demanda:
 
-### 1. Notebook Experimental (`Rede_Neural_Multilayer_Perceptron_MLP_(Teste).ipynb`)
+### 1. Notebook Experimental (`Rede_Neural_Multilayer_Perceptron_MLP.ipynb`)
 - **Objetivo:** Previsão multi-step da demanda diária de produtos para os próximos **7 dias no futuro ($t+1$ a $t+7$)**.
 - **Engenharia de Recursos (Feature Engineering):**
   - Variáveis temporais extraídas da data (Dia da Semana, Dia do Mês, Mês do Ano).
@@ -68,11 +68,13 @@ O projeto conta com uma abordagem completa de Ciência de Dados para modelagem p
   - Normalização Min-Max para a quantidade vendida.
 - **Arquitetura da Rede Neural (PyTorch):**
   - **Camada de Entrada:** 17 nós (produtos + sazonalidades de calendário).
-  - **Camadas Ocultas:**
+  - **Camadas Ocultas (5 camadas com ativações ReLU e Dropout):**
     - `Linear(17, 256)` + `ReLU` + `Dropout(0.20)`
     - `Linear(256, 128)` + `ReLU` + `Dropout(0.20)`
     - `Linear(128, 64)` + `ReLU`
-  - **Camada de Saída:** `Linear(64, 7)` (7 neurônios contínuos, cada um prevendo um dia futuro).
+    - `Linear(64, 32)` + `ReLU`
+    - `Linear(32, 16)` + `ReLU`
+  - **Camada de Saída:** `Linear(16, 7)` (7 neurônios contínuos com ativação `ReLU`, cada um prevendo a demanda de um dia futuro de $t+1$ a $t+7$).
   - **Otimização:** Otimizador Adam com taxa de aprendizado $\eta = 0.001$, regularização L2 (`weight_decay = 0.0001`) e função de custo Erro Quadrático Médio (`MSELoss`).
 - **Validação:** Separação temporal (treino em 2023, validação e teste em 2024 para evitar *data leakage*).
 
@@ -110,7 +112,7 @@ flora-acessorios-pi4/
 │   ├── services/api.js                           # Camada de comunicação HTTP
 │   └── vite.config.js
 ├── pesos_modelo/                                 # Pesos treinados da Rede Neural (PyTorch)
-├── Rede_Neural_Multilayer_Perceptron_MLP_(Teste).ipynb  # Treinamento e validação do modelo de IA
+├── Rede_Neural_Multilayer_Perceptron_MLP.ipynb          # Treinamento e validação do modelo de IA
 ├── criar-banco.bat                               # Script Windows para criar e popular o MySQL
 ├── iniciar.bat                                   # Script Windows para subir Back + Front de uma vez
 ├── vercel.json                                   # Configuração de build e rotas para Vercel

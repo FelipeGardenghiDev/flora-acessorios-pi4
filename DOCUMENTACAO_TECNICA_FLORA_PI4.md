@@ -31,7 +31,7 @@ flora-acessorios-pi4/
 │   ├── vite.config.js          # Configuração de host 127.0.0.1 e proxy reverso /api
 │   └── package.json            # Dependências do front-end
 ├── pesos_modelo/               # Pesos pré-treinados do modelo de Rede Neural MLP (PyTorch)
-├── Rede_Neural_MLP.ipynb       # Notebook de treinamento e inferência de previsão de demanda
+├── Rede_Neural_Multilayer_Perceptron_MLP.ipynb # Notebook de treinamento e inferência de previsão de demanda
 ├── Tutorial para ligar o...txt # Especificação oficial dos passos de execução
 ├── criar-banco.bat             # Script de criação automatizada do banco no XAMPP
 ├── iniciar.bat                 # Script de inicialização em 2 janelas (Back e Front)
